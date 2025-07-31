@@ -29,8 +29,7 @@ jobs:
             libxcomposite1 \
             libxdamage1 \
             libxrandr2 \
-            libu2f-udev \
-            libvpx7
+            libu2f-udev
 
       - name: Install dependencies
         run: npm ci
