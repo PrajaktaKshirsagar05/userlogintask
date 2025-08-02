@@ -1,9 +1,12 @@
-name: Run Playwright Tests
+name: Run Playwright Test on Chrome
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:  # Manual trigger
+  schedule:           # Automatic run at 10:00 AM IST (4:30 AM UTC)
+    - cron: '30 4 * * *'  # UTC time
 
 jobs:
-  test:
+  run-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -13,29 +16,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-
-      - name: Install OS dependencies for Playwright
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libnss3 \
-            libatk-bridge2.0-0 \
-            libxss1 \
-            libxshmfence1 \
-            libgbm-dev \
-            libgtk-3-0 \
-            libdrm2 \
-            libxcomposite1 \
-            libxdamage1 \
-            libxrandr2 \
-            libu2f-udev
+          node-version: 20
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Install Playwright Browsers
-        run: npx playwright install
+      - name: Install playwright-test
+        run: npm install --save-dev @playwright/test
 
-      - name: Run Playwright Tests
-        run: npx playwright test
+      - name: Install only Chrome for Playwright
+        run: npx playwright install chromium
+
+      - name: Run Playwright tests on Chrome
+        run: npx playwright test tests/login.test.ts --project=chromium --config=playwright.config.ts
